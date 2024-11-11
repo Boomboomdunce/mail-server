@@ -235,6 +235,8 @@ impl<T: SessionStream> Session<T> {
             message: message.map(|message| {
                 // Debug print message content
                 println!("Debug - Message Body: {}", String::from_utf8_lossy(message.raw_body()));
+                let debug_message_row = self.data.message.clone();
+                println!("Debug - Message Row: {}", String::from_utf8_lossy(&debug_message_row));
                 
                 Message {
                     headers: message
