@@ -23,6 +23,10 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     g++-x86-64-linux-gnu binutils-x86-64-linux-gnu \
     libssl-dev  musl-tools \
     pkg-config
+RUN openssl version
+RUN pkg-config --libs openssl
+RUN export OPENSSL_LIB_DIR=/usr/lib/$(dpkg -L libssl-dev | grep libssl.so | head -n 1 | xargs dirname)
+RUN export OPENSSL_INCLUDE_DIR=/usr/include/openssl
 RUN rustup target add "$(cat /target.txt)"
 COPY --from=planner /recipe.json /recipe.json
 RUN RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
