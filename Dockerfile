@@ -17,6 +17,7 @@ RUN case "${TARGETPLATFORM}" in \
     esac
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -yq build-essential libclang-16-dev \
     g++-aarch64-linux-gnu binutils-aarch64-linux-gnu \
     g++-x86-64-linux-gnu binutils-x86-64-linux-gnu \
