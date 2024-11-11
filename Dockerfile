@@ -1,7 +1,7 @@
 # Stalwart Dockerfile
 # Credits: https://github.com/33KK 
 
-FROM --platform=$BUILDPLATFORM docker.io/lukemathwalker/cargo-chef:latest-rust-alpine3.20 AS chef
+FROM --platform=$BUILDPLATFORM docker.io/lukemathwalker/cargo-chef:latest-rust-slim-bookworm AS chef
 WORKDIR /build
 
 FROM --platform=$BUILDPLATFORM chef AS planner
