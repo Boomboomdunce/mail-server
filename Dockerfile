@@ -29,7 +29,6 @@ RUN apt-get install -y libssl-dev
 RUN apt-get install -y openssl
 RUN apt-get install -y musl-tools
 # 添加交叉编译所需的 SSL 开发包
-RUN apt-get install -y libssl-dev:arm64
 RUN apt-get install -y gcc-aarch64-linux-gnu
 
 # 设置 OpenSSL 相关环境变量
