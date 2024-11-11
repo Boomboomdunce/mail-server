@@ -1,7 +1,7 @@
 # Stalwart Dockerfile
 # Credits: https://github.com/33KK 
 
-FROM --platform=$BUILDPLATFORM docker.io/lukemathwalker/cargo-chef:latest-rust-slim-bookworm AS chef
+FROM --platform=$BUILDPLATFORM docker.io/lukemathwalker/cargo-chef:latest-rust-alpine3.20 AS chef
 WORKDIR /build
 
 FROM --platform=$BUILDPLATFORM chef AS planner
@@ -20,6 +20,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -yq build-essential libclang-16-dev \
     g++-aarch64-linux-gnu binutils-aarch64-linux-gnu \
     g++-x86-64-linux-gnu binutils-x86-64-linux-gnu
+RUN apt-get install -yq libssl-dev pkg-config openssl
 RUN rustup target add "$(cat /target.txt)"
 COPY --from=planner /recipe.json /recipe.json
 RUN RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
