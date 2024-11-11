@@ -13,56 +13,68 @@ ARG TARGETPLATFORM
 
 # 设置目标平台
 RUN case "${TARGETPLATFORM}" in \
-    "linux/arm64") echo "aarch64-unknown-linux-musl" > /target.txt && echo "-C linker=aarch64-linux-musl-gcc" > /flags.txt ;; \
-    "linux/amd64") echo "x86_64-unknown-linux-musl" > /target.txt && echo "-C linker=x86_64-linux-musl-gcc" > /flags.txt ;; \
+    "linux/arm64") echo "aarch64-unknown-linux-musl" > /target.txt ;; \
+    "linux/amd64") echo "x86_64-unknown-linux-musl" > /target.txt ;; \
     *) exit 1 ;; \
     esac
 
-# 安装依赖
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    dpkg --add-architecture arm64 && \
-    apt-get update && \
-    apt-get install -yq \
+# 安装基础依赖
+RUN apt-get update && \
+    apt-get install -y \
     build-essential \
-    libclang-16-dev \
-    pkg-config \
     musl-tools \
-    musl-dev \
-    libssl-dev \
-    libssl-dev:arm64 \
-    gcc-aarch64-linux-gnu \
-    g++-aarch64-linux-gnu \
-    libc6-dev-arm64-cross
+    wget \
+    pkg-config \
+    cmake
 
-# 设置交叉编译环境变量
-ENV PKG_CONFIG_ALLOW_CROSS=1 \
-    PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig \
-    PKG_CONFIG_SYSROOT_DIR=/usr/aarch64-linux-gnu \
-    OPENSSL_DIR=/usr/lib/aarch64-linux-gnu \
-    OPENSSL_INCLUDE_DIR=/usr/include \
-    OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu \
+# 下载并编译 musl 交叉编译工具链
+RUN wget https://musl.cc/aarch64-linux-musl-cross.tgz && \
+    tar -xf aarch64-linux-musl-cross.tgz -C /opt && \
+    rm aarch64-linux-musl-cross.tgz
+
+# 下载并编译 OpenSSL
+RUN wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz && \
+    tar -xf openssl-1.1.1w.tar.gz && \
+    cd openssl-1.1.1w && \
+    case "$(cat /target.txt)" in \
+        "aarch64-unknown-linux-musl") \
+            CC=/opt/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc \
+            ./Configure linux-aarch64 --prefix=/usr/local/musl \
+            no-shared \
+            no-async \
+            no-engine \
+            ;; \
+        "x86_64-unknown-linux-musl") \
+            CC=musl-gcc \
+            ./Configure linux-x86_64 --prefix=/usr/local/musl \
+            no-shared \
+            no-async \
+            no-engine \
+            ;; \
+    esac && \
+    make -j$(nproc) && \
+    make install_sw
+
+# 设置环境变量
+ENV PATH="/opt/aarch64-linux-musl-cross/bin:$PATH" \
+    PKG_CONFIG_ALLOW_CROSS=1 \
     OPENSSL_STATIC=1 \
-    CC_aarch64_unknown_linux_musl=aarch64-linux-gnu-gcc \
-    CXX_aarch64_unknown_linux_musl=aarch64-linux-gnu-g++
-
-# 创建必要的符号链接
-RUN mkdir -p /usr/aarch64-linux-gnu && \
-    ln -s /usr/lib/aarch64-linux-gnu/libssl.so /usr/aarch64-linux-gnu/ && \
-    ln -s /usr/lib/aarch64-linux-gnu/libcrypto.so /usr/aarch64-linux-gnu/
+    OPENSSL_DIR=/usr/local/musl \
+    OPENSSL_INCLUDE_DIR=/usr/local/musl/include \
+    OPENSSL_LIB_DIR=/usr/local/musl/lib \
+    CC_aarch64_unknown_linux_musl=/opt/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc \
+    AR_aarch64_unknown_linux_musl=/opt/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ar \
+    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=/opt/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc
 
 # 安装 Rust 目标
 RUN rustup target add "$(cat /target.txt)"
 
-# 继续原来的构建步骤
+# 继续构建步骤
 COPY --from=planner /recipe.json /recipe.json
-RUN RUSTFLAGS="$(cat /flags.txt)" \
-    CC=aarch64-linux-gnu-gcc \
-    cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
+RUN cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
 
 COPY . .
-RUN RUSTFLAGS="$(cat /flags.txt)" \
-    CC=aarch64-linux-gnu-gcc \
-    cargo build --target "$(cat /target.txt)" --release -p mail-server -p stalwart-cli
+RUN cargo build --target "$(cat /target.txt)" --release -p mail-server -p stalwart-cli
 RUN mv "/build/target/$(cat /target.txt)/release" "/output"
 
 FROM docker.io/debian:bookworm-slim
