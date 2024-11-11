@@ -19,7 +19,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get install -yq build-essential libclang-16-dev \
     g++-aarch64-linux-gnu binutils-aarch64-linux-gnu \
-    g++-x86-64-linux-gnu binutils-x86-64-linux-gnu
+    g++-x86-64-linux-gnu binutils-x86-64-linux-gnu \
+    libssl-dev openssl-devel musl-tools \
+    pkg-config
 RUN rustup target add "$(cat /target.txt)"
 COPY --from=planner /recipe.json /recipe.json
 RUN RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
