@@ -40,6 +40,7 @@ RUN wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz && \
         "aarch64-unknown-linux-musl") \
             CC=/opt/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc \
             ./Configure linux-aarch64 --prefix=/usr/local/musl \
+            enable-pkgconfig \
             no-shared \
             no-async \
             no-engine \
@@ -47,6 +48,7 @@ RUN wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz && \
         "x86_64-unknown-linux-musl") \
             CC=musl-gcc \
             ./Configure linux-x86_64 --prefix=/usr/local/musl \
+            enable-pkgconfig \
             no-shared \
             no-async \
             no-engine \
@@ -58,10 +60,15 @@ RUN wget https://www.openssl.org/source/openssl-1.1.1w.tar.gz && \
 # 设置环境变量
 ENV PATH="/opt/aarch64-linux-musl-cross/bin:$PATH" \
     PKG_CONFIG_ALLOW_CROSS=1 \
+    PKG_CONFIG_PATH=/usr/local/musl/lib/pkgconfig \
+    PKG_CONFIG_SYSROOT_DIR=/usr/local/musl \
     OPENSSL_STATIC=1 \
     OPENSSL_DIR=/usr/local/musl \
     OPENSSL_INCLUDE_DIR=/usr/local/musl/include \
     OPENSSL_LIB_DIR=/usr/local/musl/lib \
+    AARCH64_UNKNOWN_LINUX_MUSL_OPENSSL_DIR=/usr/local/musl \
+    AARCH64_UNKNOWN_LINUX_MUSL_OPENSSL_INCLUDE_DIR=/usr/local/musl/include \
+    AARCH64_UNKNOWN_LINUX_MUSL_OPENSSL_LIB_DIR=/usr/local/musl/lib \
     CC_aarch64_unknown_linux_musl=/opt/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc \
     AR_aarch64_unknown_linux_musl=/opt/aarch64-linux-musl-cross/bin/aarch64-linux-musl-ar \
     CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=/opt/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc
