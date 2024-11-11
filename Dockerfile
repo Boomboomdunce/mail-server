@@ -17,9 +17,27 @@ RUN case "${TARGETPLATFORM}" in \
     esac
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -yq build-essential libclang-16-dev \
-    g++-aarch64-linux-gnu binutils-aarch64-linux-gnu \
-    g++-x86-64-linux-gnu binutils-x86-64-linux-gnu
+    apt-get install -yq \
+    build-essential \
+    libclang-16-dev \
+    g++-aarch64-linux-gnu \
+    binutils-aarch64-linux-gnu \
+    g++-x86-64-linux-gnu \
+    binutils-x86-64-linux-gnu \
+    pkg-config \
+    libssl-dev \
+    openssl \
+    musl-tools \
+    # 添加交叉编译所需的 SSL 开发包
+    libssl-dev:arm64 \
+    gcc-aarch64-linux-gnu
+
+# 设置 OpenSSL 相关环境变量
+ENV OPENSSL_DIR=/usr/include/openssl \
+    PKG_CONFIG_ALLOW_CROSS=1 \
+    OPENSSL_INCLUDE_DIR=/usr/include \
+    OPENSSL_LIB_DIR=/usr/lib
+
 RUN rustup target add "$(cat /target.txt)"
 COPY --from=planner /recipe.json /recipe.json
 RUN RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
