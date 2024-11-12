@@ -77,54 +77,44 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 设置 Rust toolchain
-      - name: Set up Rust Toolchain
-        uses: actions-rs/toolchain@v1
+      # 登录 Docker Hub
+      - name: Log In to DockerHub
+        uses: docker/login-action@v3
         with:
-          toolchain: stable
-          target: aarch64-apple-darwin
-          override: true
-          components: clippy, rustfmt
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
 
-      # 缓存 Cargo 依赖
-      - name: Cache Cargo Dependencies
-        uses: actions/cache@v3
+      # 设置 Docker Buildx
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v3
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            server/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-
-      # 安装 protobuf-compiler（使用 Homebrew）
-      - name: Install protobuf-compiler
-        run: brew install protobuf
-
-      # 运行单元测试
-      - name: Run Unit Tests
-        run: cargo test --verbose
-        working-directory: ./server
-
-      # 运行 Clippy
-      - name: Run Clippy
-        run: cargo clippy -- -D warnings
-        working-directory: ./server
-
-      # 检查代码格式
-      - name: Check Code Formatting
-        run: cargo fmt -- --check
-        working-directory: ./server
-
-      # 构建 Mac ARM 二进制
-      - name: Build for Mac ARM
-        run: |
-          cargo build --release --target aarch64-apple-darwin
-
-      # 上传 Mac ARM 二进制为工作流产物
-      - name: Upload Mac ARM Binaries
-        uses: actions/upload-artifact@v3
+          version: "v0.10.2"
+          driver: "docker-container"
+          buildkitd-flags: "--allow-insecure-entitlement security.insecure"
+      
+      # 设置 QEMU（如果需要多架构支持，可启用）
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      # 提取 Docker 元数据
+      - name: Extract Metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v4
         with:
-          name: mail-server-mac-arm
-          path: target/aarch64-apple-darwin/release/mail-server
+          images: |
+            docker.io/${{ secrets.DOCKER_USER }}/mail-server
+          tags: |
+            type=ref,event=tag
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+      
+      # 构建并推送 Docker 镜像
+      - name: Build and Push Docker Images
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
