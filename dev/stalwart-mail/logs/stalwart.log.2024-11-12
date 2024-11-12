@@ -1,0 +1,146 @@
+2024-11-12T06:26:55Z INFO Starting Stalwart Mail Server v0.10.6 (server.startup)
+	version = 0.10.6
+2024-11-12T06:26:55Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:26:55Z INFO Webadmin resource unpacked (resource.webadmin-unpacked)
+	path = "/tmp/STALWART_WEBADMIN"
+2024-11-12T06:26:55Z INFO Server licensing event (server.licensing)
+	details = Stalwart Enterprise Edition license key is valid
+	domain = "mx.nextcloud.games"
+	total = 50
+	validFrom = "2024-10-30T18:01:57Z"
+	validTo = "2025-10-30T18:11:57Z"
+2024-11-12T06:26:55Z INFO Housekeeper process started (housekeeper.start)
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "http"
+	localIp = ::
+	localPort = 8080
+	tls = false
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "https"
+	localIp = ::
+	localPort = 443
+	tls = true
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "imap"
+	localIp = ::
+	localPort = 143
+	tls = false
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "imaptls"
+	localIp = ::
+	localPort = 993
+	tls = true
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "pop3"
+	localIp = ::
+	localPort = 110
+	tls = false
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "pop3s"
+	localIp = ::
+	localPort = 995
+	tls = true
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "sieve"
+	localIp = ::
+	localPort = 4190
+	tls = false
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "smtp"
+	localIp = ::
+	localPort = 25
+	tls = false
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "submission"
+	localIp = ::
+	localPort = 587
+	tls = true
+2024-11-12T06:26:55Z INFO Network listener started (network.listen-start)
+	listenerId = "submissions"
+	localIp = ::
+	localPort = 465
+	tls = true
+2024-11-12T06:26:56Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:27:19Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:27:20Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:27:55Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:27:55Z WARN OpenTelemetry metrics exporter error (telemetry.otel-metrics-exporter-error)
+	reason = "Metrics exporter otlp failed with the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:27:56Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:01Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:01Z INFO Authentication successful (auth.success)
+	listenerId = "http"
+	localPort = 8080
+	remoteIp = 172.18.0.1
+	remotePort = 61344
+	accountName = "admin"
+2024-11-12T06:28:02Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:04Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:05Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export spans
+	reason = "Exporter otlp encountered the following error(s): the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:05Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:11Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:12Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:14Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:15Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:16Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:20Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:21Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:23Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:24Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export spans
+	reason = "Exporter otlp encountered the following error(s): the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:24Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:25Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:26Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:27Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:28Z WARN OpenTelemetry exporter error (telemetry.otel-exporter-error)
+	details = Failed to export logs
+	reason = "Exporter otlp encountered the following errors: the grpc server returns error (The service is currently unavailable): , detailed error message: tcp connect error: Connection refused (os error 111)"
+2024-11-12T06:28:31Z INFO Shutting down Stalwart Mail Server v0.10.6 (server.shutdown)
+	causedBy = SIGTERM

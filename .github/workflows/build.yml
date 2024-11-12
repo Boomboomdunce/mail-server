@@ -14,7 +14,12 @@ jobs:
   build_mac_arm:
     name: Build Mac ARM (Apple Silicon)
     if: github.event_name == 'push'
-    runs-on: macos-latest
+    runs-on: dockurr/macos-latest
+
+    permissions:
+      contents: read
+      packages: write
+
 
     steps:
       # 检查代码

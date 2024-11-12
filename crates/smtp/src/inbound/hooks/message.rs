@@ -5,7 +5,6 @@
  */
 
 use std::time::Instant;
-
 use ahash::AHashMap;
 use common::{
     config::smtp::session::{MTAHook, Stage},
@@ -179,6 +178,7 @@ impl<T: SessionStream> Session<T> {
     ) -> Result<Response, String> {
         // Build request
         let (tls_version, tls_cipher) = self.stream.tls_version_and_cipher();
+        
         let request = Request {
             context: Context {
                 stage: stage.into(),
@@ -233,11 +233,6 @@ impl<T: SessionStream> Session<T> {
                     .collect(),
             }),
             message: message.map(|message| {
-                // Debug print message content
-                println!("Debug - Message Body: {}", String::from_utf8_lossy(message.raw_body()));
-                let debug_message_row = self.data.message.clone();
-                println!("Debug - Message Row: {}", String::from_utf8_lossy(&debug_message_row));
-                
                 Message {
                     headers: message
                         .raw_parsed_headers()
@@ -250,22 +245,13 @@ impl<T: SessionStream> Session<T> {
                         })
                         .collect(),
                     server_headers: vec![],
-                    contents: String::from_utf8_lossy(message.raw_body()).into_owned(),
+                    // contents: String::from_utf8_lossy(message.raw_body()).into_owned(),
+                    // 修改成raw_message的内容
+                    contents: String::from_utf8_lossy(message.raw_message()).into_owned(),
                     size: message.raw_message().len(),
                 }
             }),
-            
         };
-
-        /* 
-        // Add debug logging for the request
-        trc::event!(
-            MtaHook(MtaHookEvent::RequestDebug),
-            SpanId = self.data.session_id,
-            Id = mta_hook.id.clone(),
-            Request = serde_json::to_string(&request).unwrap_or_default(),
-        );
-        */
         send_mta_hook_request(mta_hook, request).await
     }
 }

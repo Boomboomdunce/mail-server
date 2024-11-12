@@ -78,7 +78,6 @@ pub struct SessionData {
     pub remote_ip_str: String,
     pub remote_port: u16,
     pub helo_domain: String,
-
     pub mail_from: Option<SessionAddress>,
     pub rcpt_to: Vec<SessionAddress>,
     pub rcpt_errors: usize,

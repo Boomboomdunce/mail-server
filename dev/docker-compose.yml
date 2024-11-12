@@ -1,0 +1,22 @@
+services:
+  stalwart-mail:
+    #image: functionthink/mail-server:dev
+    image: stalwartlabs/mail-server:latest
+    container_name: stalwart-mail
+    ports:
+      - "443:443"
+      - "8080:8080"
+      - "25:25"
+      - "587:587"
+      - "465:465"
+      - "143:143"
+      - "993:993"
+      - "4190:4190"
+      - "110:110"
+      - "995:995"
+    volumes:
+      - /Users/kpas/SynologyDrive/Github/mail-server/dev/stalwart-mail:/opt/stalwart-mail
+      # - /Users/kpas/SynologyDrive/Github/mail-server/target/debug/stalwart-mail:/usr/local/bin/stalwart-mail
+    hostname: nextcloud.games
+    environment:
+      - DOMAIN=nextcloud.games
