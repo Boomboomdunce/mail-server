@@ -23,15 +23,12 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             host_os: ubuntu-20.04
             use_cross: false
-
           - target: aarch64-apple-darwin
             host_os: macos-latest
             use_cross: false
           - target: x86_64-apple-darwin
             host_os: macos-latest
             use_cross: false
-
-          # FIXME: waiting for ldap3 and hickory-resolver bump to ring 0.17.x
           - target: x86_64-pc-windows-msvc
             host_os: windows-2022
             use_cross: false
@@ -66,6 +63,13 @@ jobs:
         with:
           key: ${{matrix.host_os}}-${{matrix.target}}-mail
 
+      - name: Install Cross
+        if: matrix.use_cross == true
+        uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cross
+          git: https://github.com/cross-rs/cross
+
       - name: Build
         shell: bash
         run: |
@@ -76,12 +80,10 @@ jobs:
 
           root="${PWD}"
           mkdir artifacts archives
-          ext="${{ startsWith(matrix.host_os, 'windows') && '.exe' || '' }}"
+          ext="${{startsWith(matrix.host_os, 'windows') == true && '.exe' || ''}}"
 
           # Workaround a Windows moment
-          if [ "${matrix.host_os}" == "windows-2022" ]; then
-            export PATH="/c/Strawberry/c/bin:/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:$PATH"
-          fi
+          export PATH="/c/Strawberry/c/bin:/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:$PATH"
 
           build() {
             ${{matrix.env}} ${{matrix.use_cross == true && 'cross' || 'cargo'}} build --release --target "${target}" "$@"
@@ -143,8 +145,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ./archives/*
-          prerelease: ${{!startsWith(github.ref, 'refs/tags/') && true || null}}
-          tag_name: ${{!startsWith(github.ref, 'refs/tags/') && 'nightly' || null}}
+          prerelease: ${{!startsWith(github.ref, 'refs/tags/') == true && true || null}}
+          tag_name: ${{!startsWith(github.ref, 'refs/tags/') == true && 'nightly' || null}}
+
 
   docker_build:
     name: Docker Build
@@ -160,26 +163,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 登录 DockerHub
+      # 登录Docker Hub
       - name: Log In to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{secrets.DOCKER_USER}}
           password: ${{secrets.DOCKER_PASS}}
 
       # 设置 Docker Buildx
       - name: Set Up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          version: "v0.10.2"
-          driver: "docker-container"
-          buildkitd-flags: "--allow-insecure-entitlement security.insecure"
+        uses: docker/setup-buildx-action@v2
 
-      # 设置 QEMU
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
-      # 提取 Docker 元数据
       - name: Extract Metadata for Docker
         id: meta
         uses: docker/metadata-action@v4
@@ -191,10 +188,9 @@ jobs:
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
-      # 构建和推送 Docker 镜像
       - name: Build and Push Docker Images
         id: build
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
