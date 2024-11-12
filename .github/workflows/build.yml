@@ -11,6 +11,57 @@ on:
       - dev
 
 jobs:
+  build_mac_arm:
+    name: Build Mac ARM (Apple Silicon)
+    needs: docker_build
+    runs-on: macos-latest
+
+    steps:
+      # 检查代码
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 登录 Docker Hub
+      - name: Log In to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      # 设置 Docker Buildx
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: "v0.10.2"
+          driver: "docker-container"
+          buildkitd-flags: "--allow-insecure-entitlement security.insecure"
+      
+      # 设置 QEMU（如果需要多架构支持，可启用）
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      # 提取 Docker 元数据
+      - name: Extract Metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            docker.io/${{ secrets.DOCKER_USER }}/mail-server
+          tags: |
+            type=ref,event=tag
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+      
+      # 构建并推送 Docker 镜像
+      - name: Build and Push Docker Images
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
   docker_build:
     name: Docker Build (Linux x86)
     if: github.event_name == 'push'
@@ -67,54 +118,3 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  build_mac_arm:
-    name: Build Mac ARM (Apple Silicon)
-    needs: docker_build
-    runs-on: macos-latest
-
-    steps:
-      # 检查代码
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      # 登录 Docker Hub
-      - name: Log In to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASS }}
-
-      # 设置 Docker Buildx
-      - name: Set Up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          version: "v0.10.2"
-          driver: "docker-container"
-          buildkitd-flags: "--allow-insecure-entitlement security.insecure"
-      
-      # 设置 QEMU（如果需要多架构支持，可启用）
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      
-      # 提取 Docker 元数据
-      - name: Extract Metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            docker.io/${{ secrets.DOCKER_USER }}/mail-server
-          tags: |
-            type=ref,event=tag
-            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-      
-      # 构建并推送 Docker 镜像
-      - name: Build and Push Docker Images
-        id: build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          platforms: linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
