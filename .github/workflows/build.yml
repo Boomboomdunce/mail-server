@@ -20,34 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #- target: aarch64-unknown-linux-gnu
-          #  host_os: ubuntu-20.04
-          #  env: "JEMALLOC_SYS_WITH_LG_PAGE=16"
-          #  use_cross: true
-          #- target: armv7-unknown-linux-gnueabihf
-          #  host_os: ubuntu-20.04
-          #  env: "JEMALLOC_SYS_WITH_LG_PAGE=16"
-          #  use_cross: true
-          #- target: arm-unknown-linux-gnueabihf
-          #  host_os: ubuntu-20.04
-          #  use_cross: true
           - target: x86_64-unknown-linux-gnu
             host_os: ubuntu-20.04
             use_cross: false
-
-          #- target: aarch64-unknown-linux-musl
-          #  host_os: ubuntu-20.04
-          #  env: "JEMALLOC_SYS_WITH_LG_PAGE=16"
-          #  use_cross: true
-          #- target: armv7-unknown-linux-musleabihf
-          #  host_os: ubuntu-20.04
-          #  use_cross: true
-          #- target: arm-unknown-linux-musleabihf
-          #  host_os: ubuntu-20.04
-          #  use_cross: true
-          #- target: x86_64-unknown-linux-musl
-          #  host_os: ubuntu-20.04
-          #  use_cross: true
 
           - target: aarch64-apple-darwin
             host_os: macos-latest
@@ -57,9 +32,6 @@ jobs:
             use_cross: false
 
           # FIXME: waiting for ldap3 and hickory-resolver bump to ring 0.17.x
-          #- target: aarch64-pc-windows-msvc
-          #  host_os: windows-2022
-          #  use_cross: false
           - target: x86_64-pc-windows-msvc
             host_os: windows-2022
             use_cross: false
@@ -94,13 +66,6 @@ jobs:
         with:
           key: ${{matrix.host_os}}-${{matrix.target}}-mail
 
-      - name: Install Cross
-        if: matrix.use_cross == true
-        uses: baptiste0928/cargo-install@v2
-        with:
-          crate: cross
-          git: https://github.com/cross-rs/cross
-
       - name: Build
         shell: bash
         run: |
@@ -111,10 +76,12 @@ jobs:
 
           root="${PWD}"
           mkdir artifacts archives
-          ext="${{startsWith(matrix.host_os, 'windows') == true && '.exe' || ''}}"
+          ext="${{ startsWith(matrix.host_os, 'windows') && '.exe' || '' }}"
 
           # Workaround a Windows moment
-          export PATH="/c/Strawberry/c/bin:/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:$PATH"
+          if [ "${matrix.host_os}" == "windows-2022" ]; then
+            export PATH="/c/Strawberry/c/bin:/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:$PATH"
+          fi
 
           build() {
             ${{matrix.env}} ${{matrix.use_cross == true && 'cross' || 'cargo'}} build --release --target "${target}" "$@"
@@ -176,9 +143,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ./archives/*
-          prerelease: ${{!startsWith(github.ref, 'refs/tags/') == true && true || null}}
-          tag_name: ${{!startsWith(github.ref, 'refs/tags/') == true && 'nightly' || null}}
-
+          prerelease: ${{!startsWith(github.ref, 'refs/tags/') && true || null}}
+          tag_name: ${{!startsWith(github.ref, 'refs/tags/') && 'nightly' || null}}
 
   docker_build:
     name: Docker Build
@@ -190,46 +156,42 @@ jobs:
       packages: write
 
     steps:
+      # 检查代码
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set Up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Log In to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{github.repository_owner}}
-          password: ${{secrets.TOKEN}}
-      
-      - name: debug print environment variables
-        run: |
-          echo "GITHUB_TOKEN: ${{github.token}}"
-          echo "TOKEN: ${{secrets.TOKEN}}"
-          echo "username: ${{github.repository_owner}}"
-      
+      # 登录 DockerHub
       - name: Log In to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{secrets.DOCKER_USER}}
           password: ${{secrets.DOCKER_PASS}}
 
+      # 设置 Docker Buildx
+      - name: Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: "v0.10.2"
+          driver: "docker-container"
+          buildkitd-flags: "--allow-insecure-entitlement security.insecure"
+
+      # 设置 QEMU
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      # 提取 Docker 元数据
       - name: Extract Metadata for Docker
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{github.repository}}
-            ghcr.io/${{github.repository}}
+            docker.io/${{ secrets.DOCKER_USER }}/mail-server
           tags: |
             type=ref,event=tag
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
+      # 构建和推送 Docker 镜像
       - name: Build and Push Docker Images
         id: build
         uses: docker/build-push-action@v4
