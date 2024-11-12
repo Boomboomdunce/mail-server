@@ -13,7 +13,7 @@ on:
 jobs:
   build_mac_arm:
     name: Build Mac ARM (Apple Silicon)
-    needs: docker_build
+    if: github.event_name == 'push'
     runs-on: macos-latest
 
     steps:
@@ -62,6 +62,7 @@ jobs:
           platforms: linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+  
   docker_build:
     name: Docker Build (Linux x86)
     if: github.event_name == 'push'
