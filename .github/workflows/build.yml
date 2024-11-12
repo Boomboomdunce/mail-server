@@ -12,25 +12,25 @@ on:
 
 jobs:
   docker_build:
-    name: Docker Build
-
+    name: Docker Build (Linux x86)
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read
       packages: write
 
     steps:
       # 检查代码
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 登录Docker Hub
+      # 登录 Docker Hub
       - name: Log In to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{secrets.DOCKER_USER}}
-          password: ${{secrets.DOCKER_PASS}}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
 
       # 设置 Docker Buildx
       - name: Set Up Docker Buildx
@@ -40,7 +40,7 @@ jobs:
           driver: "docker-container"
           buildkitd-flags: "--allow-insecure-entitlement security.insecure"
 
-      # 设置 QEMU
+      # 设置 QEMU（如果需要多架构支持，可启用）
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -56,7 +56,7 @@ jobs:
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
-      # 构建和推送 Docker 镜像
+      # 构建并推送 Docker 镜像
       - name: Build and Push Docker Images
         id: build
         uses: docker/build-push-action@v5
@@ -64,5 +64,67 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64
-          tags: ${{steps.meta.outputs.tags}}
-          labels: ${{steps.meta.outputs.labels}}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build_mac_arm:
+    name: Build Mac ARM (Apple Silicon)
+    needs: docker_build
+    runs-on: macos-latest
+
+    steps:
+      # 检查代码
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 设置 Rust toolchain
+      - name: Set up Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: aarch64-apple-darwin
+          override: true
+          components: clippy, rustfmt
+
+      # 缓存 Cargo 依赖
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            server/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      # 安装 protobuf-compiler（使用 Homebrew）
+      - name: Install protobuf-compiler
+        run: brew install protobuf
+
+      # 运行单元测试
+      - name: Run Unit Tests
+        run: cargo test --verbose
+        working-directory: ./server
+
+      # 运行 Clippy
+      - name: Run Clippy
+        run: cargo clippy -- -D warnings
+        working-directory: ./server
+
+      # 检查代码格式
+      - name: Check Code Formatting
+        run: cargo fmt -- --check
+        working-directory: ./server
+
+      # 构建 Mac ARM 二进制
+      - name: Build for Mac ARM
+        run: |
+          cargo build --release --target aarch64-apple-darwin
+
+      # 上传 Mac ARM 二进制为工作流产物
+      - name: Upload Mac ARM Binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: mail-server-mac-arm
+          path: target/aarch64-apple-darwin/release/mail-server
