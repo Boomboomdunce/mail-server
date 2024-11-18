@@ -181,6 +181,7 @@ impl<T: SessionStream> Session<T> {
         
         let request = Request {
             context: Context {
+                session_id: self.data.session_id,
                 stage: stage.into(),
                 client: Client {
                     ip: self.data.remote_ip.to_string(),
