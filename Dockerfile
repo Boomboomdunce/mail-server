@@ -19,17 +19,14 @@ RUN case "${TARGETPLATFORM}" in \
 # 安装基本依赖
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -yq build-essential libclang-16-dev pkg-config openssl
+    apt-get install -yq build-essential libclang-16-dev pkg-config openssl libssl-dev
 
 # 根据目标平台安装特定的编译工具
 RUN case "${TARGETPLATFORM}" in \
     "linux/arm64") \
         apt-get install -yq g++-aarch64-linux-gnu binutils-aarch64-linux-gnu && \
         mkdir -p /usr/aarch64-linux-gnu && \
-        ln -s /usr/include/aarch64-linux-gnu/openssl /usr/include/openssl && \
-        export OPENSSL_DIR=/usr && \
-        export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu && \
-        export OPENSSL_INCLUDE_DIR=/usr/include/openssl ;; \
+        ln -s /usr/include/aarch64-linux-gnu/openssl /usr/include/openssl ;; \
     "linux/amd64") \
         apt-get install -yq g++-x86-64-linux-gnu binutils-x86-64-linux-gnu ;; \
     *) exit 1 ;; \
@@ -38,21 +35,40 @@ RUN case "${TARGETPLATFORM}" in \
 RUN rustup target add "$(cat /target.txt)"
 COPY --from=planner /recipe.json /recipe.json
 
-# 设置交叉编译环境变量
+# 设置持久的环境变量
 ENV PKG_CONFIG_ALLOW_CROSS=1
+ENV OPENSSL_NO_VENDOR=1
 RUN case "${TARGETPLATFORM}" in \
     "linux/arm64") \
-        echo "Setting up ARM64 environment" && \
-        export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig && \
-        export OPENSSL_DIR=/usr && \
-        export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu && \
-        export OPENSSL_INCLUDE_DIR=/usr/include/openssl ;; \
-    *) true ;; \
+        echo "export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig" >> /etc/environment && \
+        echo "export OPENSSL_DIR=/usr" >> /etc/environment && \
+        echo "export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu" >> /etc/environment && \
+        echo "export OPENSSL_INCLUDE_DIR=/usr/include/openssl" >> /etc/environment ;; \
+    "linux/amd64") \
+        echo "export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> /etc/environment && \
+        echo "export OPENSSL_DIR=/usr" >> /etc/environment && \
+        echo "export OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> /etc/environment && \
+        echo "export OPENSSL_INCLUDE_DIR=/usr/include/openssl" >> /etc/environment ;; \
+    *) exit 1 ;; \
     esac
 
-RUN RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
+# 使用 shell 包装命令以确保环境变量生效
+RUN echo '#!/bin/sh' > /build.sh && \
+    echo 'set -e' >> /build.sh && \
+    echo 'source /etc/environment' >> /build.sh && \
+    echo 'RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json' >> /build.sh && \
+    chmod +x /build.sh
+
+RUN /build.sh
+
 COPY . .
-RUN RUSTFLAGS="$(cat /flags.txt)" cargo build --target "$(cat /target.txt)" --release -p mail-server -p stalwart-cli
+RUN echo '#!/bin/sh' > /build-final.sh && \
+    echo 'set -e' >> /build-final.sh && \
+    echo 'source /etc/environment' >> /build-final.sh && \
+    echo 'RUSTFLAGS="$(cat /flags.txt)" cargo build --target "$(cat /target.txt)" --release -p mail-server -p stalwart-cli' >> /build-final.sh && \
+    chmod +x /build-final.sh
+
+RUN /build-final.sh
 RUN mv "/build/target/$(cat /target.txt)/release" "/output"
 
 FROM docker.io/debian:bookworm-slim
