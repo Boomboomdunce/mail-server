@@ -21,6 +21,17 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     g++-aarch64-linux-gnu binutils-aarch64-linux-gnu \
     g++-x86-64-linux-gnu binutils-x86-64-linux-gnu
 RUN apt-get install -yq libssl-dev pkg-config openssl
+
+# 为 ARM64 交叉编译设置 openssl
+RUN case "${TARGETPLATFORM}" in \
+    "linux/arm64") \
+        apt-get install -yq libssl-dev:arm64 && \
+        export OPENSSL_DIR=/usr/lib/aarch64-linux-gnu && \
+        export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu && \
+        export OPENSSL_INCLUDE_DIR=/usr/include ;; \
+    *) true ;; \
+    esac
+
 RUN rustup target add "$(cat /target.txt)"
 COPY --from=planner /recipe.json /recipe.json
 RUN RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
