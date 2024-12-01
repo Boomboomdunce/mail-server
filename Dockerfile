@@ -16,24 +16,28 @@ RUN case "${TARGETPLATFORM}" in \
     *) exit 1 ;; \
     esac
 RUN export DEBIAN_FRONTEND=noninteractive && \
+    dpkg --add-architecture arm64 && \
     apt-get update && \
     apt-get install -yq build-essential libclang-16-dev \
     g++-aarch64-linux-gnu binutils-aarch64-linux-gnu \
-    g++-x86-64-linux-gnu binutils-x86-64-linux-gnu
-RUN apt-get install -yq libssl-dev pkg-config openssl
+    g++-x86-64-linux-gnu binutils-x86-64-linux-gnu \
+    libssl-dev pkg-config openssl
 
 # 为 ARM64 交叉编译设置 openssl
 RUN case "${TARGETPLATFORM}" in \
     "linux/arm64") \
-        apt-get install -yq libssl-dev:arm64 && \
-        export OPENSSL_DIR=/usr/lib/aarch64-linux-gnu && \
+        mkdir -p /usr/aarch64-linux-gnu && \
+        ln -s /usr/include/aarch64-linux-gnu/openssl /usr/include/openssl && \
+        export OPENSSL_DIR=/usr && \
         export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu && \
-        export OPENSSL_INCLUDE_DIR=/usr/include ;; \
+        export OPENSSL_INCLUDE_DIR=/usr/include/openssl ;; \
     *) true ;; \
     esac
 
 RUN rustup target add "$(cat /target.txt)"
 COPY --from=planner /recipe.json /recipe.json
+ENV PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
+ENV PKG_CONFIG_ALLOW_CROSS=1
 RUN RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
 COPY . .
 RUN RUSTFLAGS="$(cat /flags.txt)" cargo build --target "$(cat /target.txt)" --release -p mail-server -p stalwart-cli
