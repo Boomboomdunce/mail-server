@@ -23,23 +23,8 @@ RUN case "${TARGETPLATFORM}" in \
 ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
     CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-linux-gnu-gcc \
     PKG_CONFIG_ALLOW_CROSS=1 \
-    OPENSSL_NO_VENDOR=1
-
-# 根据目标平台设置特定的环境变量
-RUN case "${TARGETPLATFORM}" in \
-    "linux/arm64") \
-        echo "export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig" >> /env && \
-        echo "export OPENSSL_DIR=/usr" >> /env && \
-        echo "export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu" >> /env && \
-        echo "export OPENSSL_INCLUDE_DIR=/usr/include" >> /env ;; \
-    "linux/amd64") \
-        echo "export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> /env && \
-        echo "export OPENSSL_DIR=/usr" >> /env && \
-        echo "export OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> /env && \
-        echo "export OPENSSL_INCLUDE_DIR=/usr/include" >> /env ;; \
-    *) exit 1 ;; \
-    esac && \
-    . /env
+    OPENSSL_NO_VENDOR=1 \
+    OPENSSL_STATIC=1
 
 # 安装基本依赖
 RUN export DEBIAN_FRONTEND=noninteractive && \
@@ -53,6 +38,29 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         g++-aarch64-linux-gnu \
         gcc-x86-64-linux-gnu \
         g++-x86-64-linux-gnu
+
+# 为 ARM64 准备 OpenSSL
+RUN case "${TARGETPLATFORM}" in \
+    "linux/arm64") \
+        dpkg --add-architecture arm64 && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends \
+            libssl-dev:arm64 \
+            libc6-dev-arm64-cross && \
+        mkdir -p /usr/aarch64-linux-gnu/lib && \
+        ln -s /usr/lib/aarch64-linux-gnu/libssl.a /usr/aarch64-linux-gnu/lib/ && \
+        ln -s /usr/lib/aarch64-linux-gnu/libcrypto.a /usr/aarch64-linux-gnu/lib/ && \
+        echo "export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig" >> /env && \
+        echo "export OPENSSL_DIR=/usr" >> /env && \
+        echo "export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu" >> /env && \
+        echo "export OPENSSL_INCLUDE_DIR=/usr/include" >> /env ;; \
+    "linux/amd64") \
+        echo "export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> /env && \
+        echo "export OPENSSL_DIR=/usr" >> /env && \
+        echo "export OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> /env && \
+        echo "export OPENSSL_INCLUDE_DIR=/usr/include" >> /env ;; \
+    *) exit 1 ;; \
+    esac
 
 # 添加目标架构
 RUN rustup target add "$(cat /target.txt)"
