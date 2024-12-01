@@ -1,6 +1,3 @@
-# Stalwart Dockerfile
-# Credits: https://github.com/33KK 
-
 FROM --platform=$BUILDPLATFORM docker.io/lukemathwalker/cargo-chef:latest-rust-slim-bookworm AS chef
 WORKDIR /build
 
@@ -10,67 +7,66 @@ RUN cargo chef prepare --recipe-path /recipe.json
 
 FROM --platform=$BUILDPLATFORM chef AS builder
 ARG TARGETPLATFORM
+
+# 设置目标架构和编译器标志
 RUN case "${TARGETPLATFORM}" in \
-    "linux/arm64") echo "aarch64-unknown-linux-gnu" > /target.txt && echo "-C linker=aarch64-linux-gnu-gcc" > /flags.txt ;; \
-    "linux/amd64") echo "x86_64-unknown-linux-gnu" > /target.txt && echo "-C linker=x86_64-linux-gnu-gcc" > /flags.txt ;; \
+    "linux/arm64") \
+        echo "aarch64-unknown-linux-gnu" > /target.txt && \
+        echo "aarch64-linux-gnu" > /arch.txt ;; \
+    "linux/amd64") \
+        echo "x86_64-unknown-linux-gnu" > /target.txt && \
+        echo "x86-64-linux-gnu" > /arch.txt ;; \
     *) exit 1 ;; \
     esac
+
+# 设置环境变量
+ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
+    CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-linux-gnu-gcc \
+    PKG_CONFIG_ALLOW_CROSS=1 \
+    OPENSSL_NO_VENDOR=1
+
+# 根据目标平台设置特定的环境变量
+RUN case "${TARGETPLATFORM}" in \
+    "linux/arm64") \
+        echo "export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig" >> /env && \
+        echo "export OPENSSL_DIR=/usr" >> /env && \
+        echo "export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu" >> /env && \
+        echo "export OPENSSL_INCLUDE_DIR=/usr/include" >> /env ;; \
+    "linux/amd64") \
+        echo "export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> /env && \
+        echo "export OPENSSL_DIR=/usr" >> /env && \
+        echo "export OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> /env && \
+        echo "export OPENSSL_INCLUDE_DIR=/usr/include" >> /env ;; \
+    *) exit 1 ;; \
+    esac && \
+    . /env
 
 # 安装基本依赖
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -yq build-essential libclang-16-dev pkg-config openssl libssl-dev bash
+    apt-get install -yq \
+        build-essential \
+        pkg-config \
+        libssl-dev \
+        libclang-16-dev \
+        gcc-aarch64-linux-gnu \
+        g++-aarch64-linux-gnu \
+        gcc-x86-64-linux-gnu \
+        g++-x86-64-linux-gnu
 
-# 根据目标平台安装特定的编译工具
-RUN case "${TARGETPLATFORM}" in \
-    "linux/arm64") \
-        apt-get install -yq g++-aarch64-linux-gnu binutils-aarch64-linux-gnu && \
-        mkdir -p /usr/aarch64-linux-gnu && \
-        ln -s /usr/include/aarch64-linux-gnu/openssl /usr/include/openssl ;; \
-    "linux/amd64") \
-        apt-get install -yq g++-x86-64-linux-gnu binutils-x86-64-linux-gnu ;; \
-    *) exit 1 ;; \
-    esac
-
+# 添加目标架构
 RUN rustup target add "$(cat /target.txt)"
+
+# 复制和构建依赖
 COPY --from=planner /recipe.json /recipe.json
+RUN . /env && RUSTFLAGS="-C linker=$(cat /arch.txt)-gcc" \
+    cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json
 
-# 设置持久的环境变量
-ENV PKG_CONFIG_ALLOW_CROSS=1
-ENV OPENSSL_NO_VENDOR=1
-
-# 创建环境变量文件
-RUN case "${TARGETPLATFORM}" in \
-    "linux/arm64") \
-        echo "PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig" > /env.sh && \
-        echo "OPENSSL_DIR=/usr" >> /env.sh && \
-        echo "OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu" >> /env.sh && \
-        echo "OPENSSL_INCLUDE_DIR=/usr/include/openssl" >> /env.sh ;; \
-    "linux/amd64") \
-        echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" > /env.sh && \
-        echo "OPENSSL_DIR=/usr" >> /env.sh && \
-        echo "OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> /env.sh && \
-        echo "OPENSSL_INCLUDE_DIR=/usr/include/openssl" >> /env.sh ;; \
-    *) exit 1 ;; \
-    esac
-
-# 使用 bash 包装命令以确保环境变量生效
-RUN echo '#!/bin/bash' > /build.sh && \
-    echo 'set -e' >> /build.sh && \
-    echo 'while read line; do export "$line"; done < /env.sh' >> /build.sh && \
-    echo 'RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json' >> /build.sh && \
-    chmod +x /build.sh
-
-RUN /build.sh
-
+# 复制源代码并构建
 COPY . .
-RUN echo '#!/bin/bash' > /build-final.sh && \
-    echo 'set -e' >> /build-final.sh && \
-    echo 'while read line; do export "$line"; done < /env.sh' >> /build-final.sh && \
-    echo 'RUSTFLAGS="$(cat /flags.txt)" cargo build --target "$(cat /target.txt)" --release -p mail-server -p stalwart-cli' >> /build-final.sh && \
-    chmod +x /build-final.sh
+RUN . /env && RUSTFLAGS="-C linker=$(cat /arch.txt)-gcc" \
+    cargo build --target "$(cat /target.txt)" --release -p mail-server -p stalwart-cli
 
-RUN /build-final.sh
 RUN mv "/build/target/$(cat /target.txt)/release" "/output"
 
 FROM docker.io/debian:bookworm-slim
