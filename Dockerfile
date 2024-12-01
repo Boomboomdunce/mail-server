@@ -19,7 +19,7 @@ RUN case "${TARGETPLATFORM}" in \
 # 安装基本依赖
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
-    apt-get install -yq build-essential libclang-16-dev pkg-config openssl libssl-dev
+    apt-get install -yq build-essential libclang-16-dev pkg-config openssl libssl-dev bash
 
 # 根据目标平台安装特定的编译工具
 RUN case "${TARGETPLATFORM}" in \
@@ -38,33 +38,35 @@ COPY --from=planner /recipe.json /recipe.json
 # 设置持久的环境变量
 ENV PKG_CONFIG_ALLOW_CROSS=1
 ENV OPENSSL_NO_VENDOR=1
+
+# 创建环境变量文件
 RUN case "${TARGETPLATFORM}" in \
     "linux/arm64") \
-        echo "export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig" >> /etc/environment && \
-        echo "export OPENSSL_DIR=/usr" >> /etc/environment && \
-        echo "export OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu" >> /etc/environment && \
-        echo "export OPENSSL_INCLUDE_DIR=/usr/include/openssl" >> /etc/environment ;; \
+        echo "PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig" > /env.sh && \
+        echo "OPENSSL_DIR=/usr" >> /env.sh && \
+        echo "OPENSSL_LIB_DIR=/usr/lib/aarch64-linux-gnu" >> /env.sh && \
+        echo "OPENSSL_INCLUDE_DIR=/usr/include/openssl" >> /env.sh ;; \
     "linux/amd64") \
-        echo "export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> /etc/environment && \
-        echo "export OPENSSL_DIR=/usr" >> /etc/environment && \
-        echo "export OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> /etc/environment && \
-        echo "export OPENSSL_INCLUDE_DIR=/usr/include/openssl" >> /etc/environment ;; \
+        echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" > /env.sh && \
+        echo "OPENSSL_DIR=/usr" >> /env.sh && \
+        echo "OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> /env.sh && \
+        echo "OPENSSL_INCLUDE_DIR=/usr/include/openssl" >> /env.sh ;; \
     *) exit 1 ;; \
     esac
 
-# 使用 shell 包装命令以确保环境变量生效
-RUN echo '#!/bin/sh' > /build.sh && \
+# 使用 bash 包装命令以确保环境变量生效
+RUN echo '#!/bin/bash' > /build.sh && \
     echo 'set -e' >> /build.sh && \
-    echo 'source /etc/environment' >> /build.sh && \
+    echo 'while read line; do export "$line"; done < /env.sh' >> /build.sh && \
     echo 'RUSTFLAGS="$(cat /flags.txt)" cargo chef cook --target "$(cat /target.txt)" --release --recipe-path /recipe.json' >> /build.sh && \
     chmod +x /build.sh
 
 RUN /build.sh
 
 COPY . .
-RUN echo '#!/bin/sh' > /build-final.sh && \
+RUN echo '#!/bin/bash' > /build-final.sh && \
     echo 'set -e' >> /build-final.sh && \
-    echo 'source /etc/environment' >> /build-final.sh && \
+    echo 'while read line; do export "$line"; done < /env.sh' >> /build-final.sh && \
     echo 'RUSTFLAGS="$(cat /flags.txt)" cargo build --target "$(cat /target.txt)" --release -p mail-server -p stalwart-cli' >> /build-final.sh && \
     chmod +x /build-final.sh
 
