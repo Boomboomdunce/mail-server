@@ -80,7 +80,6 @@ pub struct SessionData {
     pub remote_port: u16,
     pub asn_geo_data: AsnGeoLookupResult,
     pub helo_domain: String,
-
     pub mail_from: Option<SessionAddress>,
     pub rcpt_to: Vec<SessionAddress>,
     pub rcpt_errors: usize,

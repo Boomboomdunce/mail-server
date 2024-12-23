@@ -1,0 +1,182 @@
+authentication.fallback-admin.secret = "$6$qFSOEjbzqoWzMt8b$E90pnTW1SwV1jqtX7IdbBllkiPuKejdJEFqYuBP9L3pwMthaLJ16owVsYePy.z5iOZ7djOTFGqOfNlwkTleYb0"
+authentication.fallback-admin.user = "admin"
+certificate.nextcloud.games.cert = '''-----BEGIN CERTIFICATE-----
+MIIFAjCCA+qgAwIBAgISBGmBbK0NjV2BuwuHx3sZvI97MA0GCSqGSIb3DQEBCwUA
+MDMxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQwwCgYDVQQD
+EwNSMTEwHhcNMjQxMDMxMDgzMjAwWhcNMjUwMTI5MDgzMTU5WjAaMRgwFgYDVQQD
+Ew9uZXh0Y2xvdWQuZ2FtZXMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQCbMi7l4c/Njl8AInFU12lxL8puHEvsIAe1y+Gp8SZcWSJt8whezOKiACvS6Vxm
+lwyPuLFNwXDdgd/VAKznMr7R1C8yjASC6ykjUduLaJuVjsQwMIWK11maoVZe1tHC
+G7rqDSYt0VETuBrWK51Im8XIuPKJTm2DImaC++RtjPLywTCckHOFLBqdn5CKPVvj
+8EYeOKC1SqozXMJCbsj9oTxIa7qoKHj90weTVmtDdIAUDRvydAYPWGrCRymjdcYX
+EA8KcZ7uJD5XGYNyv/fEByDOnb8S7e5Y/qsYOD94w9hukjSoaRWjjOELVVYSgHhp
+CBHYKpTz6NJAywZcfHDv9TcFAgMBAAGjggInMIICIzAOBgNVHQ8BAf8EBAMCBaAw
+HQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYD
+VR0OBBYEFK643qKpY48GsFuHSiWhr+ZqD3xVMB8GA1UdIwQYMBaAFMXPRqTq9MPA
+emyVxC2wXpIvJuO5MFcGCCsGAQUFBwEBBEswSTAiBggrBgEFBQcwAYYWaHR0cDov
+L3IxMS5vLmxlbmNyLm9yZzAjBggrBgEFBQcwAoYXaHR0cDovL3IxMS5pLmxlbmNy
+Lm9yZy8wLQYDVR0RBCYwJIIRKi5uZXh0Y2xvdWQuZ2FtZXOCD25leHRjbG91ZC5n
+YW1lczATBgNVHSAEDDAKMAgGBmeBDAECATCCAQUGCisGAQQB1nkCBAIEgfYEgfMA
+8QB3AObSMWNAd4zBEEEG13G5zsHSQPaWhIb7uocyHf0eN45QAAABkuHphPgAAAQD
+AEgwRgIhAIq6eKddkxxlyU4vgEJhsI2KXmWDwJyFejqi9NvTKAgPAiEA9Ox740i7
+HK/U/1HBQj8CqklaOZfTUMxHK2gO+76yphwAdgDPEVbu1S58r/OHW9lpLpvpGnFn
+SrAX7KwB0lt3zsw7CAAAAZLh6YUyAAAEAwBHMEUCICoMaWNwNHAOREsevkJmMo9P
+b0R3SGpZGpSDGayG11gTAiEA/NV++rbqMihGNLzDBJwknKX6OQ/tS5VDx0rGZjKm
+k/cwDQYJKoZIhvcNAQELBQADggEBAJcJQWZ4mgcVRwfq9MMMT5yfFg9ntSAzsIsy
+xwyqJ/KMDRsQOXx6GX4oByipmr9DaXvnZ7G3wAi3m10NBUWkIKdazxwRwuLg2+MK
+88kn2rOT9X9+yRaUEq01WeWFJT1QE02LLj+W2PBHSLavajw4wpSHixvz65Mcpm8w
+FEDB50S9WsWqy4Q0WzGsEoFa219iR930amZSp/EcvEADe6Q1octRViu5yceHfA46
+OXLUaLoHvMUfmpdVkcNo3kPRgpqNCuourQ4EvC1MgeNXjfwUbfDf1jEiq+buwjD6
+/+Sr0D1995T+Puy7w2ew1rSA3JehiIV8u+4hJ7xNtAzIF8jxRiU=
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIFBjCCAu6gAwIBAgIRAIp9PhPWLzDvI4a9KQdrNPgwDQYJKoZIhvcNAQELBQAw
+TzELMAkGA1UEBhMCVVMxKTAnBgNVBAoTIEludGVybmV0IFNlY3VyaXR5IFJlc2Vh
+cmNoIEdyb3VwMRUwEwYDVQQDEwxJU1JHIFJvb3QgWDEwHhcNMjQwMzEzMDAwMDAw
+WhcNMjcwMzEyMjM1OTU5WjAzMQswCQYDVQQGEwJVUzEWMBQGA1UEChMNTGV0J3Mg
+RW5jcnlwdDEMMAoGA1UEAxMDUjExMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+CgKCAQEAuoe8XBsAOcvKCs3UZxD5ATylTqVhyybKUvsVAbe5KPUoHu0nsyQYOWcJ
+DAjs4DqwO3cOvfPlOVRBDE6uQdaZdN5R2+97/1i9qLcT9t4x1fJyyXJqC4N0lZxG
+AGQUmfOx2SLZzaiSqhwmej/+71gFewiVgdtxD4774zEJuwm+UE1fj5F2PVqdnoPy
+6cRms+EGZkNIGIBloDcYmpuEMpexsr3E+BUAnSeI++JjF5ZsmydnS8TbKF5pwnnw
+SVzgJFDhxLyhBax7QG0AtMJBP6dYuC/FXJuluwme8f7rsIU5/agK70XEeOtlKsLP
+Xzze41xNG/cLJyuqC0J3U095ah2H2QIDAQABo4H4MIH1MA4GA1UdDwEB/wQEAwIB
+hjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUxc9GpOr0w8B6bJXELbBeki8m47kwHwYDVR0jBBgwFoAU
+ebRZ5nu25eQBc4AIiMgaWPbpm24wMgYIKwYBBQUHAQEEJjAkMCIGCCsGAQUFBzAC
+hhZodHRwOi8veDEuaS5sZW5jci5vcmcvMBMGA1UdIAQMMAowCAYGZ4EMAQIBMCcG
+A1UdHwQgMB4wHKAaoBiGFmh0dHA6Ly94MS5jLmxlbmNyLm9yZy8wDQYJKoZIhvcN
+AQELBQADggIBAE7iiV0KAxyQOND1H/lxXPjDj7I3iHpvsCUf7b632IYGjukJhM1y
+v4Hz/MrPU0jtvfZpQtSlET41yBOykh0FX+ou1Nj4ScOt9ZmWnO8m2OG0JAtIIE38
+01S0qcYhyOE2G/93ZCkXufBL713qzXnQv5C/viOykNpKqUgxdKlEC+Hi9i2DcaR1
+e9KUwQUZRhy5j/PEdEglKg3l9dtD4tuTm7kZtB8v32oOjzHTYw+7KdzdZiw/sBtn
+UfhBPORNuay4pJxmY/WrhSMdzFO2q3Gu3MUBcdo27goYKjL9CTF8j/Zz55yctUoV
+aneCWs/ajUX+HypkBTA+c8LGDLnWO2NKq0YD/pnARkAnYGPfUDoHR9gVSp/qRx+Z
+WghiDLZsMwhN1zjtSC0uBWiugF3vTNzYIEFfaPG7Ws3jDrAMMYebQ95JQ+HIBD/R
+PBuHRTBpqKlyDnkSHDHYPiNX3adPoPAcgdF3H2/W0rmoswMWgTlLn1Wu0mrks7/q
+pdWfS6PJ1jty80r2VKsM/Dj3YIDfbjXKdaFU5C+8bhfJGqU3taKauuz0wHVGT3eo
+6FlWkWYtbt4pgdamlwVeZEW+LM7qZEJEsMNPrfC03APKmZsJgpWCDWOKZvkZcvjV
+uYkQ4omYCTX5ohy+knMjdOmdH9c7SpqEWBDC86fiNex+O0XOMEZSa8DA
+-----END CERTIFICATE-----'''
+certificate.nextcloud.games.default = true
+certificate.nextcloud.games.private-key = '''-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCbMi7l4c/Njl8A
+InFU12lxL8puHEvsIAe1y+Gp8SZcWSJt8whezOKiACvS6VxmlwyPuLFNwXDdgd/V
+AKznMr7R1C8yjASC6ykjUduLaJuVjsQwMIWK11maoVZe1tHCG7rqDSYt0VETuBrW
+K51Im8XIuPKJTm2DImaC++RtjPLywTCckHOFLBqdn5CKPVvj8EYeOKC1SqozXMJC
+bsj9oTxIa7qoKHj90weTVmtDdIAUDRvydAYPWGrCRymjdcYXEA8KcZ7uJD5XGYNy
+v/fEByDOnb8S7e5Y/qsYOD94w9hukjSoaRWjjOELVVYSgHhpCBHYKpTz6NJAywZc
+fHDv9TcFAgMBAAECggEAAOCbQERzCsvzwInxTxP6rh+hitbRHRAfSwlQiMfquhns
+5mc51GNfIqBSnxofohrXgNZ/9hsSWsY5sDgVQidYydHjxGrjOaQ/ssnrLlIUkxdg
+B4+2qY7HHGcuGFIplGnYuCsD3L1ysmRXjn9nn7n1t8lH4bvWRagDoVjwNShXVUT9
+Egi2oKgOZRGBY2Fr5HIQKE7bcwxUyj65dgsAV3j2NLWwi35Ne9vnrspwUc5rxYpZ
+wX44uOFQ9W8bSB8xFbwrf8C1HE8uiTuusSFCrFoLG24ZK6mV0jUJPsk+dI2uuMPT
+mX90L8cPR9lL1D9KqDQ5ub2NxYptQdnNQ5jCicC7oQKBgQC8nEBU+GEwcygpPWEu
+4OdwWjBqqRmnktx5qf39zQq0/Kx0yruOp6v7tdAbX/nAfrfIKrMNTasLFpvPSc0P
+vwHnsu1dENAeHErZ4tdkvF22lXfq72jVmFEn+7jnyJITnj4dsYYzucnNbOr9EvaE
+2Cn/qjsArbsFJVkIW7eykIFc0QKBgQDSpZnwsPDhyc0cwWsD/eIR99gC+2ogSRW7
+zPq4NN6cQGslQ3J1c/DG+s5w4p9QthHBD0iYpKFkrgrmzWmxNl4koabmTQ/T8Aho
+vePfphZE7gluCtBsKBMdqc5KWsQP0a1RIE6LYin9OdPw+p5mnQpXTH2QECWmOMUs
+XggE133z9QKBgHclXZ5PqVWp6Vzj4VhzysA2uQ8n84TgSVayBDkoJfNfCrJcv07G
+rOY9XFFut57abc6M6r8kqUA/7/1qaZfg2Zs8dKWt0Uq0JLSvj9GbDLgig7ZttpP3
+vIy9f3ksQtsRw7uOQXC7lLeobmmgaQpSY3WWW9954ALILQ4SomCy2IWBAoGAGi+R
+8nTcjQT8JY350rY160vnI3/Dkp3jQMRbipiv77amWyyGRwmRrfqxvSC+81ae4GQY
+/zjAA3cLTePNNsVucJlT2R9NT2hwcyzf7gaEkC8TJwXbIQbeUXqxdVbRNrI3HHWq
+rfMXCy6sJTHSjSkKhw2wMj9/nqlCAaDy2D89nh0CgYBlPC9NVDNoREb8LZSLYWLD
+PUHtHtg9I4nhXCxHplscpsQ8M8UjlEUJ0AXANb/h2syfOfhKgS06E1E5CuRN3ThD
+EWyVDqGdYdUK672pAUvkCnT6ZFUN46YpuFxSKEg76L6o++OgA57dTc5BPstjakyt
+ezmTITPAxOz6SDhw5Lpb3w==
+-----END PRIVATE KEY-----'''
+config.resource.spam-filter = "file:///opt/stalwart-mail/etc/spamfilter.toml"
+config.resource.webadmin = "file:///opt/stalwart-mail/webadmin.zip"
+directory.internal.cache.entries = 500
+directory.internal.store = "pstgresql"
+directory.internal.type = "internal"
+enterprise.license-key = "lXQiZwAAAABtqgNpAAAAADIAAAASAAAAbXgubmV4dGNsb3VkLmdhbWVzrfKKCq9rn8OklJEDJleL1gzi2R0kTD1MLxcv4gffwlgJaXb/85kzDNJjtoYF1tWS9DuNr/GtcGEWxCMmkmPzBA=="
+lookup.default.hostname = "nextcloud.games"
+server.listener.http.bind = "[::]:8080"
+server.listener.http.protocol = "http"
+server.listener.https.bind = "[::]:443"
+server.listener.https.protocol = "http"
+server.listener.https.tls.implicit = true
+server.listener.imap.bind = "[::]:143"
+server.listener.imap.protocol = "imap"
+server.listener.imaptls.bind = "[::]:993"
+server.listener.imaptls.protocol = "imap"
+server.listener.imaptls.tls.implicit = true
+server.listener.pop3.bind = "[::]:110"
+server.listener.pop3.protocol = "pop3"
+server.listener.pop3s.bind = "[::]:995"
+server.listener.pop3s.protocol = "pop3"
+server.listener.pop3s.tls.implicit = true
+server.listener.sieve.bind = "[::]:4190"
+server.listener.sieve.protocol = "managesieve"
+server.listener.smtp.bind = "[::]:25"
+server.listener.smtp.protocol = "smtp"
+server.listener.smtp.proxy.override = false
+server.listener.smtp.socket.override = false
+server.listener.smtp.tls.implicit = false
+server.listener.smtp.tls.override = false
+server.listener.submission.bind = "[::]:587"
+server.listener.submission.protocol = "smtp"
+server.listener.submission.proxy.override = false
+server.listener.submission.socket.override = false
+server.listener.submission.tls.implicit = true
+server.listener.submission.tls.override = false
+server.listener.submissions.bind = "[::]:465"
+server.listener.submissions.protocol = "smtp"
+server.listener.submissions.proxy.override = false
+server.listener.submissions.socket.override = false
+server.listener.submissions.tls.implicit = true
+server.listener.submissions.tls.override = false
+server.tls.ignore-client-order = false
+server.tls.timeout = "1m"
+storage.blob = "pstgresql"
+storage.data = "pstgresql"
+storage.directory = "internal"
+storage.fts = "pstgresql"
+storage.lookup = "pstgresql"
+store.pstgresql.compression = "lz4"
+store.pstgresql.database = "stalwart"
+store.pstgresql.host = "192.168.2.197"
+store.pstgresql.password = "Welcome1admin2024"
+store.pstgresql.pool.max-connections = 10
+store.pstgresql.port = 5432
+store.pstgresql.purge.frequency = "0 3 *"
+store.pstgresql.query.domains = "SELECT 1 FROM emails WHERE address LIKE '%@' || $1 LIMIT 1"
+store.pstgresql.query.emails = "SELECT address FROM emails WHERE name = $1 AND type != 'list' ORDER BY type DESC, address ASC"
+store.pstgresql.query.expand = "SELECT p.address FROM emails AS p JOIN emails AS l ON p.name = l.name WHERE p.type = 'primary' AND l.address = $1 AND l.type = 'list' ORDER BY p.address LIMIT 50"
+store.pstgresql.query.members = "SELECT member_of FROM group_members WHERE name = $1"
+store.pstgresql.query.name = "SELECT name, type, secret, description, quota FROM accounts WHERE name = $1 AND active = true"
+store.pstgresql.query.recipients = "SELECT name FROM emails WHERE address = $1 ORDER BY name ASC"
+store.pstgresql.query.verify = "SELECT address FROM emails WHERE address LIKE '%' || $1 || '%' AND type = 'primary' ORDER BY address LIMIT 5"
+store.pstgresql.read-from-replicas = true
+store.pstgresql.timeout = "15s"
+store.pstgresql.tls.allow-invalid-certs = false
+store.pstgresql.tls.enable = false
+store.pstgresql.type = "postgresql"
+store.pstgresql.user = "postgres"
+tracer.console.ansi = false
+tracer.console.buffered = true
+tracer.console.enable = true
+tracer.console.level = "info"
+tracer.console.lossy = false
+tracer.console.multiline = false
+tracer.console.type = "stdout"
+tracer.log.enable = false
+tracer.log.endpoint = "http://192.168.2.197:4317/v1/otel"
+tracer.log.level = "trace"
+tracer.log.lossy = false
+tracer.log.throttle = "1s"
+tracer.log.timeout = "10s"
+tracer.log.transport = "grpc"
+tracer.log.type = "open-telemetry"
+tracer.logfile.ansi = false
+tracer.logfile.enable = false
+tracer.logfile.level = "info"
+tracer.logfile.lossy = false
+tracer.logfile.multiline = true
+tracer.logfile.path = "/opt/stalwart-mail/logs"
+tracer.logfile.prefix = "stalwart.log"
+tracer.logfile.rotate = "daily"
+tracer.logfile.type = "log"

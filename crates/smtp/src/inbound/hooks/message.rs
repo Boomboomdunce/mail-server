@@ -5,7 +5,6 @@
  */
 
 use std::time::Instant;
-
 use ahash::AHashMap;
 use common::{
     config::smtp::session::{MTAHook, Stage},
@@ -179,13 +178,15 @@ impl<T: SessionStream> Session<T> {
     ) -> Result<Response, String> {
         // Build request
         let (tls_version, tls_cipher) = self.stream.tls_version_and_cipher();
+        
         let request = Request {
             context: Context {
+                session_id: self.data.session_id,
                 stage: stage.into(),
                 client: Client {
                     ip: self.data.remote_ip.to_string(),
                     port: self.data.remote_port,
-                    ptr: self
+                    ptr: self 
                         .data
                         .iprev
                         .as_ref()
@@ -232,23 +233,26 @@ impl<T: SessionStream> Session<T> {
                     })
                     .collect(),
             }),
-            message: message.map(|message| Message {
-                headers: message
-                    .raw_parsed_headers()
-                    .iter()
-                    .map(|(k, v)| {
-                        (
-                            String::from_utf8_lossy(k).into_owned(),
-                            String::from_utf8_lossy(v).into_owned(),
-                        )
-                    })
-                    .collect(),
-                server_headers: vec![],
-                contents: String::from_utf8_lossy(message.raw_body()).into_owned(),
-                size: message.raw_message().len(),
+            message: message.map(|message| {
+                Message {
+                    headers: message
+                        .raw_parsed_headers()
+                        .iter()
+                        .map(|(k, v)| {
+                            (
+                                String::from_utf8_lossy(k).into_owned(),
+                                String::from_utf8_lossy(v).into_owned(),
+                            )
+                        })
+                        .collect(),
+                    server_headers: vec![],
+                    // contents: String::from_utf8_lossy(message.raw_body()).into_owned(),
+                    // 修改成raw_message的内容
+                    contents: String::from_utf8_lossy(message.raw_message()).into_owned(),
+                    size: message.raw_message().len(),
+                }
             }),
         };
-
         send_mta_hook_request(mta_hook, request).await
     }
 }
